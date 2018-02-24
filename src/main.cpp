@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <cv.h>
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"
@@ -7,26 +8,55 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-using namespace std;
 char key;
-int main()
+bool exitProgram = false;
+
+std::string team1Name = "Team 1";
+std::string team2Name = "Team 2";
+int team1Score = 0;
+int team2Score = 0;
+
+void draw()
 {
   cv::namedWindow("opencv-show", CV_WINDOW_NORMAL || CV_WINDOW_FREERATIO);    //Create window
   cv::setWindowProperty("opencv-show", CV_WINDOW_FULLSCREEN, CV_WINDOW_FULLSCREEN);
   cv::moveWindow("opencv-show", 0, 0);
   cv::VideoCapture capture(CV_CAP_ANY);  //Capture using any camera connected to your system
-  while(1) //Create infinte loop for live streaming
+  while(!exitProgram) //Create infinte loop for live streaming
   {
     cv::Mat frame;
     capture >> frame; //Create image frames from capture
     // Resize to make full screen
     cv::resize(frame, frame, cv::Size(1920, 1080), 0, 0, CV_INTER_LINEAR);
 
-    // Draw scores
+    // Text Rectangles
     cv::rectangle(frame, cv::Point(0, 800), cv::Point(500, 1000), cv::Scalar(0,0,200), -1, 8);
     cv::rectangle(frame, cv::Point(WIDTH, 800), cv::Point(WIDTH-500, 1000), cv::Scalar(200,100,0), -1, 8);
-    cv::putText(frame, "Team 1", cv::Point(125, 850), cv::FONT_HERSHEY_DUPLEX, 2, cv::Scalar(0, 0, 0), 2, CV_AA);
-    cv::putText(frame, "Team 2", cv::Point(WIDTH-325, 850), cv::FONT_HERSHEY_DUPLEX, 2, cv::Scalar(0, 0, 0), 2, CV_AA);
+
+    // Team Names
+    cv::putText(frame, team1Name, cv::Point(125, 850), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0), 2, CV_AA);
+    cv::putText(frame, team2Name, cv::Point(WIDTH-325, 850), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0), 2, CV_AA);
+
+    // Team Scores
+    cv::putText(frame,
+                std::to_string(team1Score),
+                cv::Point(200, 950),
+                cv::FONT_HERSHEY_DUPLEX,
+                4,
+                cv::Scalar(0, 0, 0),
+                3,
+                CV_AA);
+
+    cv::putText(frame,
+                std::to_string(team2Score),
+                cv::Point(WIDTH-300, 950),
+                cv::FONT_HERSHEY_DUPLEX,
+                4,
+                cv::Scalar(0, 0, 0),
+                3,
+                CV_AA);
+
+    // Scores
     cv::imshow("opencv-show", frame);   //Show image frames on created window
     key = cvWaitKey(10);     //Capture Keyboard stroke
     if (char(key) == 27){
@@ -35,5 +65,126 @@ int main()
   }
   capture.release(); //Release capture.
   cv::destroyAllWindows(); //Destroy Window
+}
+
+void printGuessy()
+{
+  std::cout << " $$$$$$\\  $$\\   $$\\ $$$$$$$$\\  $$$$$$\\   $$$$$$\\  $$\\     $$\\ " << std::endl
+            << "$$  __$$\\ $$ |  $$ |$$  _____|$$  __$$\\ $$  __$$\\ \\$$\\   $$  |" << std::endl
+            << "$$ /  \\__|$$ |  $$ |$$ |      $$ /  \\__|$$ /  \\__| \\$$\\ $$  / " << std::endl
+            << "$$ |$$$$\\ $$ |  $$ |$$$$$\\    \\$$$$$$\\  \\$$$$$$\\    \\$$$$  /  " << std::endl
+            << "$$ |\\_$$ |$$ |  $$ |$$  __|    \\____$$\\  \\____$$\\    \\$$  /   " << std::endl
+            << "$$ |  $$ |$$ |  $$ |$$ |      $$\\   $$ |$$\\   $$ |    $$ |    " << std::endl
+            << "\\$$$$$$  |\\$$$$$$  |$$$$$$$$\\ \\$$$$$$  |\\$$$$$$  |    $$ |    " << std::endl
+            << " \\______/  \\______/ \\________| \\______/  \\______/     \\__| " << std::endl;
+}
+
+void printChoccy()
+{
+  std::cout << "$$$$$$\\  $$\\   $$\\  $$$$$$\\   $$$$$$\\   $$$$$$\\  $$\\     $$\\ " << std:: endl
+            << "$$  __$$\\ $$ |  $$ |$$  __$$\\ $$  __$$\\ $$  __$$\\ \\$$\\   $$  | " << std::endl
+            << "$$ /  \\__|$$ |  $$ |$$ /  $$ |$$ /  \\__|$$ /  \\__| \\$$\\ $$  /  " << std::endl
+            << "$$ |      $$$$$$$$ |$$ |  $$ |$$ |      $$ |        \\$$$$  /   " << std::endl
+            << "$$ |      $$  __$$ |$$ |  $$ |$$ |      $$ |         \\$$  /    " << std::endl
+            << "$$ |  $$\\ $$ |  $$ |$$ |  $$ |$$ |  $$\\ $$ |  $$\\     $$ |     " << std::endl
+            << "\\$$$$$$  |$$ |  $$ | $$$$$$  |\\$$$$$$  |\\$$$$$$  |    $$ |     " << std::endl
+            << " \\______/ \\__|  \\__| \\______/  \\______/  \\______/     \\__| " << std::endl;
+}
+
+int getInt()
+{
+  int newScore;
+  std::cin >> newScore;
+
+  while(std::cin.fail())
+  {
+    std::cout << "Error parsing num" << std::endl;
+    std::cout << "Enter a value:" << std::endl;
+    std::cin.clear();
+    std::cin.ignore(256, '\n');
+    std::cin >> newScore;
+  }
+
+  return newScore;
+}
+
+void userInterface()
+{
+  for (int i : {1, 2})
+  {
+    printGuessy();
+  }
+
+  for (int i : {1, 2})
+  {
+    printChoccy();
+  }
+
+  std::string input;
+  std::vector<std::string> acceptedInputs = {"1",
+                                             "2",
+                                             "3",
+                                             "4",
+                                             "r",
+                                             "q"};
+  while (!exitProgram)
+  {
+    std::cout << std::endl << std::endl;
+
+    std::cout << "1. team1Name: " << team1Name << std::endl;
+    std::cout << "2. team2Name: " << team2Name << std::endl;
+    std::cout << "3. team1Score: " << team1Score << std::endl;
+    std::cout << "4. team2Score: " << team2Score << std::endl;
+
+    std::cout << "Choose a variable (1-4), refresh (r) or quit (q)" << std::endl;
+    std::getline(std::cin, input);
+
+    bool inputIsCorrect = std::find(acceptedInputs.begin(), acceptedInputs.end(), input) != acceptedInputs.end();
+    if (inputIsCorrect)
+    {
+      std::cout << "Input: " << input << std::endl;
+      if (input == "1")
+      {
+        std::cout << "Enter a new name for team 1:" << std::endl;
+        std::getline(std::cin, input);
+        team1Name = input;
+      }
+      else if (input == "2")
+      {
+        std::cout << "Enter a new name for team 2:" << std::endl;
+        std::getline(std::cin, input);
+        team2Name = input;
+      }
+      else if (input == "3")
+      {
+        std::cout << "Enter a new score for team 1:" << std::endl;
+        team1Score = getInt();
+      }
+      else if (input == "4")
+      {
+        std::cout << "Enter a new score for team 2:" << std::endl;
+        team2Score = getInt();
+      }
+      else if (input == "q")
+      {
+        exitProgram = true;
+      }
+      else if (input == "r")
+      {
+        continue;
+      }
+    }
+  }
+}
+
+int main()
+{
+  std::thread ui (userInterface);
+  std::thread camera (draw);
+
+  ui.join();
+  camera.join();
+
+  std::cout << "Shutdown successful" << std::endl;
   return 0;
 }
