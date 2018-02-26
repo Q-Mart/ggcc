@@ -115,7 +115,7 @@ thread.start_new_thread(ui, ())
 cv2.namedWindow('opencv-show', cv2.WINDOW_NORMAL | cv2.WINDOW_FREERATIO)
 cv2.setWindowProperty('opencv-show', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while not exit:
   ret, img = cap.read()
