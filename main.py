@@ -6,16 +6,16 @@ BLACK = (0,0,0)
 RED = (0, 0, 200)
 BLUE = (200, 100, 0)
 
-team1Name = 'Team 1'
-team2Name = 'Team 2'
+team1Name = 'Chocco Boiis'
+team2Name = 'Double Decker'
 
 team1Score = 0
 team2Score = 0
 
-team1X = 125
+team1X = 50
 team1Y = 850
 
-team2X = WIDTH-325
+team2X = 1445
 team2Y = 850
 
 exit = False
@@ -83,10 +83,10 @@ def ui():
 
       elif (userInput == '3'):
         team1Score = int(raw_input('Enter a new score for team 1:'))
-      
+
       elif (userInput == '4'):
         team2Score = int(raw_input('Enter a new score for team 2:'))
-      
+
       elif (userInput == '5'):
         team1X += int(raw_input('Enter a number to increment team1X by:'))
 
@@ -107,13 +107,13 @@ def ui():
 
     except ValueError:
       continue
-    
 
 
 thread.start_new_thread(ui, ())
 
 cv2.namedWindow('opencv-show', cv2.WINDOW_NORMAL | cv2.WINDOW_FREERATIO)
 cv2.setWindowProperty('opencv-show', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+cv2.moveWindow('opencv-show', 1920, 0)
 
 cap = cv2.VideoCapture(1)
 
@@ -122,20 +122,20 @@ while not exit:
   img = cv2.resize(img, (1920, 1080))
 
   # Bordered Rectangles
-  cv2.rectangle(img, (0, 790), (510, 1010), BLACK, -1, 8)
-  cv2.rectangle(img, (WIDTH, 790), (WIDTH-510, 1010), BLACK, -1, 8)
+  cv2.rectangle(img, (0, 1080-790), (510, 1080-1010), BLACK, -1, 8)
+  cv2.rectangle(img, (WIDTH, 1080-790), (WIDTH-510, 1080-1010), BLACK, -1, 8)
 
   # Coloured Rectangles
-  cv2.rectangle(img, (0, 800), (500, 1000), RED, -1, 8)
-  cv2.rectangle(img, (WIDTH, 800), (WIDTH-500, 1000), BLUE, -1, 8)
+  cv2.rectangle(img, (0, 1080-800), (500, 1080-1000), RED, -1, 8)
+  cv2.rectangle(img, (WIDTH, 1080-800), (WIDTH-500, 1080-1000), BLUE, -1, 8)
 
   # Team Names
-  cv2.putText(img, team1Name, (team1X, team1Y), cv2.FONT_HERSHEY_DUPLEX, 2, BLACK, 2)
-  cv2.putText(img, team2Name, (team2X, team2Y), cv2.FONT_HERSHEY_DUPLEX, 2, BLACK, 2)
+  cv2.putText(img, team1Name, (team1X, 1080-team1Y), cv2.FONT_HERSHEY_DUPLEX, 2, BLACK, 2)
+  cv2.putText(img, team2Name, (team2X, 1080-team2Y), cv2.FONT_HERSHEY_DUPLEX, 2, BLACK, 2)
 
   # Team Scores
-  cv2.putText(img, str(team1Score), (200, 950), cv2.FONT_HERSHEY_DUPLEX, 4, BLACK, 3)
-  cv2.putText(img, str(team2Score), (WIDTH-300, 950), cv2.FONT_HERSHEY_DUPLEX, 4, BLACK, 3)
+  cv2.putText(img, str(team1Score), (200, 1080-900), cv2.FONT_HERSHEY_DUPLEX, 4, BLACK, 3)
+  cv2.putText(img, str(team2Score), (WIDTH-300, 1080-900), cv2.FONT_HERSHEY_DUPLEX, 4, BLACK, 3)
 
   cv2.imshow('opencv-show', img)
 
